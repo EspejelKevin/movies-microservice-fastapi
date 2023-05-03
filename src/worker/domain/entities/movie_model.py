@@ -1,0 +1,80 @@
+from pydantic import BaseModel, validator
+from datetime import date
+from typing import Optional
+
+
+class MovieModelIn(BaseModel):
+    name: str
+    description: str
+    original_language: str
+    dubbing: list
+    has_subtitles: bool
+    gender: str
+    release_date: date
+    rating: int
+    length: int
+
+    @validator(
+        "name",
+        "description",
+        "original_language",
+        "gender",
+        pre=True
+    )
+    def must_be_str(cls, v):
+        if not isinstance(v, str):
+            raise ValueError("must be str")
+        return v
+
+    @validator("has_subtitles", pre=True)
+    def must_be_bool(cls, v):
+        if not isinstance(v, bool):
+            raise ValueError("must be bool")
+        return v
+
+    @validator("dubbing", pre=True)
+    def verify_len(cls, v):
+        if not v or not isinstance(v, list):
+            raise ValueError("must be a list with dubbing")
+        return v
+
+    @validator("rating", pre=True)
+    def validate_range(cls, v):
+        if v < 0 or v > 5:
+            raise ValueError("must be in the range 0 - 5")
+        return v
+
+    @validator("length", pre=True)
+    def validate_length_in_minutes(cls, v):
+        if v < 90:
+            raise ValueError("must be in minutes. Minimum value is 90 min")
+        return v
+
+
+class MovieModel(MovieModelIn):
+    id_movie: int
+    url: str = ""
+
+
+class QueryFilterModel(BaseModel):
+    rating: Optional[int]
+    gender: Optional[str]
+    release_date_desc: Optional[bool] = False
+
+    @validator("rating", pre=True)
+    def validate_range(cls, v):
+        if v < 0 or v > 5:
+            raise ValueError("must be in the range 0 - 5")
+        return v
+
+    @validator("gender", pre=True)
+    def must_be_str(cls, v):
+        if not isinstance(v, str):
+            raise ValueError("must be str")
+        return v
+
+    @validator("release_date_desc", pre=True)
+    def must_be_bool(cls, v):
+        if not isinstance(v, bool):
+            raise ValueError("must be bool")
+        return v
