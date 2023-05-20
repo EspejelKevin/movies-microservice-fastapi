@@ -1,4 +1,5 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, Field
+from fastapi import Query
 from datetime import date
 from typing import Optional
 
@@ -57,24 +58,29 @@ class MovieModel(MovieModelIn):
 
 
 class QueryFilterModel(BaseModel):
-    rating: Optional[int]
-    gender: Optional[str]
-    release_date_desc: Optional[bool] = False
+    rating: Optional[int] = Field(Query(default=None, title="Rating", description="Rating of the movies", example=5))
+    gender: Optional[str] = Field(Query(default=None, title="Gender", description="Gender of the movies", example="Accion"))
+    release_date_desc: Optional[bool] = Field(Query(
+        default=False, 
+        title="Release date descending", 
+        description="Filter up or down",
+        example=True
+    ))
 
     @validator("rating", pre=True)
     def validate_range(cls, v):
-        if v < 0 or v > 5:
+        if v and v < 0 or v > 5:
             raise ValueError("must be in the range 0 - 5")
         return v
 
     @validator("gender", pre=True)
     def must_be_str(cls, v):
-        if not isinstance(v, str):
+        if v and not isinstance(v, str):
             raise ValueError("must be str")
         return v
 
     @validator("release_date_desc", pre=True)
     def must_be_bool(cls, v):
-        if not isinstance(v, bool):
+        if v and not isinstance(v, bool):
             raise ValueError("must be bool")
         return v

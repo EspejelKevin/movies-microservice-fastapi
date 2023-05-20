@@ -48,3 +48,10 @@ class WorkerController:
             usecase = app.usecases.delete_movie()
             response = usecase.execute(id_movie)
             return WorkerResponse(content=response)
+        
+    @staticmethod
+    def readiness():
+        with container.SingletonContainer.scope() as app:
+            usecase = app.usecases.readiness()
+            response = usecase.execute()
+            return WorkerResponse(content=response)

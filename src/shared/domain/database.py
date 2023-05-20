@@ -1,5 +1,4 @@
-from contextlib import AbstractContextManager, contextmanager
-from typing import Any, Callable
+from contextlib import contextmanager
 import abc
 
 
@@ -10,5 +9,4 @@ class Session:
 class Database:
     @abc.abstractmethod
     @contextmanager
-    def session(self) -> Callable[..., AbstractContextManager[Any]]:
-        pass
+    def session(self): pass

@@ -1,14 +1,18 @@
 from abc import ABCMeta, abstractmethod
-from typing import Any
+from typing import List
 
 
 class MongoRepository(metaclass=ABCMeta):
+    @abstractmethod
+    def is_up(self) -> bool:
+        raise NotImplementedError
+    
     @abstractmethod
     def create_movie(self, movie: dict) -> bool:
         raise NotImplementedError
 
     @abstractmethod
-    def get_movies(self) -> list[dict]:
+    def get_movies(self, type_order: int, filters: dict) -> List[dict]:
         raise NotImplementedError
 
     @abstractmethod
@@ -21,8 +25,4 @@ class MongoRepository(metaclass=ABCMeta):
 
     @abstractmethod
     def delete_movie(self, _id: int) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_movies_by_filter(self, _filter: Any) -> list[dict] | None:
         raise NotImplementedError

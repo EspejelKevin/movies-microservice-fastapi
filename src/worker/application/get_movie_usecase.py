@@ -9,7 +9,7 @@ class GetMovieUseCase:
         self._mongo_service = mongo_service
         self.transaction_id = str(uuid.uuid4())
 
-    def execute(self, id_movie: int):
+    def execute(self, id_movie: int) -> Response:
         movie = self._mongo_service.get_movie_by_id(id_movie)
         if movie is None:
             raise ErrorResponse(

@@ -4,7 +4,8 @@ from worker.application import (
     MongoService,
     GetMovieUseCase,
     UpdateMovieUseCase,
-    DeleteMovieUseCase
+    DeleteMovieUseCase,
+    ReadinessUseCase
 )
 from shared.infrastructure import MongoDatabase, Settings
 from worker.infrastructure import MongoWorkerRepository
@@ -37,6 +38,7 @@ class UseCasesContainer(containers.DeclarativeContainer):
     get_movie = providers.Factory(GetMovieUseCase, mongo_service=services.mongo_service)
     update_movie = providers.Factory(UpdateMovieUseCase, mongo_service=services.mongo_service)
     delete_movie = providers.Factory(DeleteMovieUseCase, mongo_service=services.mongo_service)
+    readiness = providers.Factory(ReadinessUseCase, mongo_service=services.mongo_service)
 
 
 class AppContainer(containers.DeclarativeContainer):
