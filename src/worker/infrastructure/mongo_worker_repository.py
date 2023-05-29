@@ -22,7 +22,7 @@ class MongoWorkerRepository(MongoRepository):
             result = collection.insert_one(movie)
             return result.inserted_id is not None
 
-    def get_movies(self, type_order: int, filters: dict) -> List[dict]:
+    def get_movies(self, type_order: int = 1, filters: dict = {}) -> List[dict]:
         with self.session_factory() as session:
             db = session.get_db(settings.MONGO_DB_NAME)
             collection = db.movies

@@ -2,6 +2,7 @@ from pydantic import BaseModel, validator, Field
 from fastapi import Query
 from datetime import date
 from typing import Optional
+import json
 
 
 class MovieModelIn(BaseModel):
@@ -14,6 +15,16 @@ class MovieModelIn(BaseModel):
     release_date: date
     rating: int
     length: int
+
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate_to_json
+
+    @classmethod
+    def validate_to_json(cls, value):
+        if isinstance(value, str):
+            return cls(**json.loads(value))
+        return value
 
     @validator(
         "name",
@@ -41,13 +52,13 @@ class MovieModelIn(BaseModel):
 
     @validator("rating", pre=True)
     def validate_range(cls, v):
-        if v < 0 or v > 5:
+        if v and v < 0 or v > 5:
             raise ValueError("must be in the range 0 - 5")
         return v
 
     @validator("length", pre=True)
     def validate_length_in_minutes(cls, v):
-        if v < 90:
+        if v and v < 90:
             raise ValueError("must be in minutes. Minimum value is 90 min")
         return v
 
@@ -69,9 +80,10 @@ class QueryFilterModel(BaseModel):
 
     @validator("rating", pre=True)
     def validate_range(cls, v):
-        if v and v < 0 or v > 5:
+        if not v:
+            return v
+        if v < 0 or v > 5:
             raise ValueError("must be in the range 0 - 5")
-        return v
 
     @validator("gender", pre=True)
     def must_be_str(cls, v):

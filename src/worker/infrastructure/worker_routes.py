@@ -1,7 +1,10 @@
 from shared.infrastructure import HttpResponse, get_settings
 from ..infrastructure import WorkerController
 from ..domain import MovieModelIn, QueryFilterModel
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body, UploadFile, File
+import pathlib
+import uuid
+
 
 
 settings = get_settings()
@@ -27,9 +30,18 @@ def get_movies(query_params: QueryFilterModel = Depends()) -> HttpResponse:
 
 
 @router.post("/movies", tags=["Movies"], summary="Crear una película")
-def create_movie(movie: MovieModelIn) -> HttpResponse:
-    url = ""
-    return WorkerController.create_movie(movie, url)
+async def create_movie(movie: MovieModelIn = Body(...), file: UploadFile = File(...)) -> HttpResponse:
+    try:
+        unique_id = str(uuid.uuid4().hex)
+        image_format = file.content_type.split("/")[-1]
+        image_name = f"{unique_id}.{image_format}"
+        url = f"{pathlib.Path(__file__).cwd()}/src/static/{image_name}"
+        with open(url, "wb") as image:
+            content = await file.read()
+            image.write(content)
+    except Exception as e:
+        return {"error": f"error to upload image {e}"}
+    return WorkerController.create_movie(movie, f"static/{image_name}")
 
 
 @router.get("/movies/{id_movie:int}", tags=["Movies"], summary="Obtener una película por ID")

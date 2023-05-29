@@ -2,10 +2,12 @@ from shared.infrastructure import ErrorResponse, error_exception_handler, parame
 from fastapi.exceptions import RequestValidationError
 from shared.infrastructure import get_settings
 from fastapi.openapi.utils import get_openapi
+from fastapi.staticfiles import StaticFiles
 from worker.infrastructure import router
 from fastapi import FastAPI
 import container
 import uvicorn
+import os
 
 
 description = """
@@ -66,8 +68,10 @@ def custom_openapi() -> dict:
     return app.openapi_schema
 
 
+staticfiles_path = f"{os.path.dirname(__file__)}/static"
 app.add_exception_handler(ErrorResponse, error_exception_handler)
 app.add_exception_handler(RequestValidationError, parameter_exception_handler)
+app.mount("/static", StaticFiles(directory=staticfiles_path), name="static")
 app.include_router(router)
 app.openapi = custom_openapi
 container.SingletonContainer.init()

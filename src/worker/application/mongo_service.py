@@ -12,7 +12,7 @@ class MongoService(MongoRepository):
     def create_movie(self, movie: dict) -> bool:
         return self.__mongo_repository.create_movie(movie)
 
-    def get_movies(self, type_order: int, filters: dict) -> List[dict]:
+    def get_movies(self, type_order: int = 1, filters: dict = {}) -> List[dict]:
         return self.__mongo_repository.get_movies(type_order, filters)
 
     def get_movie_by_id(self, _id: int) -> dict:

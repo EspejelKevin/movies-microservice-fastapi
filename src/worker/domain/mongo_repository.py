@@ -12,7 +12,7 @@ class MongoRepository(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def get_movies(self, type_order: int, filters: dict) -> List[dict]:
+    def get_movies(self, type_order: int = 1, filters: dict = {}) -> List[dict]:
         raise NotImplementedError
 
     @abstractmethod
