@@ -17,4 +17,10 @@ class GetMovieUseCase:
                 self.transaction_id,
                 500
             )
+        if not movie:
+            raise ErrorResponse(
+                "Failed to get movie. Try again with a different ID",
+                self.transaction_id,
+                404
+            )
         return SuccessResponse(movie, 200, self.transaction_id)

@@ -1,10 +1,9 @@
-from shared.infrastructure import HttpResponse, get_settings
+from shared.infrastructure import HttpResponse, get_settings, ErrorResponse
 from ..infrastructure import WorkerController
 from ..domain import MovieModelIn, QueryFilterModel
 from fastapi import APIRouter, Depends, Body, UploadFile, File
 import pathlib
 import uuid
-
 
 
 settings = get_settings()
@@ -39,8 +38,12 @@ async def create_movie(movie: MovieModelIn = Body(...), file: UploadFile = File(
         with open(url, "wb") as image:
             content = await file.read()
             image.write(content)
-    except Exception as e:
-        return {"error": f"error to upload image {e}"}
+    except Exception:
+        raise ErrorResponse(
+            message="Failed to upload image. Try again",
+            transaction_id=str(uuid.uuid4()),
+            status_code=500
+        )
     return WorkerController.create_movie(movie, f"static/{image_name}")
 
 

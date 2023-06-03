@@ -22,6 +22,15 @@ def error_exception_handler(_, e: ErrorResponse) -> HttpResponse:
     return HttpResponse(content=content, status_code=e.status_code, excludes={"_status_code"})
 
 
+def internal_server_error_exception_handler(_, _ex) -> HttpResponse:
+    data = {"user_message": "Excepción no controlada"}
+    meta = {   
+        "transaction_id": uuid.uuid4()
+    }
+    content = FailureResponse(data, 500, **meta)
+    return HttpResponse(content=content, status_code=500, excludes={"_status_code"})
+
+
 def parameter_exception_handler(_, ex: RequestValidationError) -> HttpResponse:
     details = Utils.get_error_details(ex.errors())
     data = {"user_message": "Parámetros inválidos"}

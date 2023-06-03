@@ -40,7 +40,7 @@ class MongoWorkerRepository(MongoRepository):
                 {"id_movie": _id},
                 projection={"_id": False}
             )
-            return result
+            return result if result else {}
 
     def update_movie(self, _id: int, new_movie: dict) -> bool:
         with self.session_factory() as session:

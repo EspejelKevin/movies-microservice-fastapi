@@ -11,6 +11,12 @@ class CreateMovieUseCase:
 
     def execute(self, movie: MovieModelIn, url: str):
         movies = self._mongo_service.get_movies()
+        if movies is None:
+            raise ErrorResponse(
+                "Failed to get movies. A connection error occurred. Try again",
+                self.transaction_id,
+                500
+            )
         movies = sorted(list(movies), key=lambda m: m.get("id_movie"))
         id_movie = 1
         if movies:
@@ -18,7 +24,7 @@ class CreateMovieUseCase:
         movie = MovieModel(**movie.dict(), id_movie=id_movie, url=url)
         movie.release_date = str(movie.release_date)
         result = self._mongo_service.create_movie(movie.dict())
-        if result is None:
+        if not result:
             raise ErrorResponse(
                 "Failed to create movie. Try again",
                 self.transaction_id,

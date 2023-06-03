@@ -13,14 +13,20 @@ class UpdateMovieUseCase:
         _movie = self._mongo_service.get_movie_by_id(id_movie)
         if _movie is None:
             raise ErrorResponse(
-                "Movie does not exist. Try again",
+                "Failed to get movie. Cannot verify if the movie exists",
                 self.transaction_id,
                 500
             )
-        movie = MovieModel(**movie.dict(), id_movie=id_movie, url=_movie.get("url", ""))
+        if not _movie:
+            raise ErrorResponse(
+                "Movie does not exist. Try again with different ID",
+                self.transaction_id,
+                404
+            )
+        movie = MovieModel(**movie, id_movie=id_movie, url=_movie.get("url", ""))
         movie.release_date = str(movie.release_date)
         result = self._mongo_service.update_movie(id_movie, movie.dict())
-        if result is None:
+        if not result:
             raise ErrorResponse(
                 "Failed to update movie. Try again",
                 self.transaction_id,

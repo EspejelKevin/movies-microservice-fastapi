@@ -13,7 +13,7 @@ class GetMoviesUseCase:
         filters = query_params.dict(exclude_none=True)
         type_order = -1 if filters.pop("release_date_desc") else 1
         movies = self._mongo_service.get_movies(type_order, filters)
-        if movies is None:
+        if not movies:
             raise ErrorResponse(
                 "Failed to get movies. Try again",
                 self.transaction_id,
