@@ -17,9 +17,9 @@ class CreateMovieUseCase:
                 self.transaction_id,
                 500
             )
-        movies = sorted(list(movies), key=lambda m: m.get("id_movie"))
         id_movie = 1
         if movies:
+            movies = sorted(list(movies), key=lambda m: m.get("id_movie"))
             id_movie = movies[-1].get("id_movie") + 1
         movie = MovieModel(**movie.dict(), id_movie=id_movie, url=url)
         movie.release_date = str(movie.release_date)
